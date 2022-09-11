@@ -1,1 +1,1 @@
-# ML-Decoder-Scalable-and-Versatile-Classification-Head
+# ML-Decoder: Scalable and Versatile Classification Head
