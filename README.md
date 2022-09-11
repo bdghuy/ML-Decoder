@@ -1,4 +1,4 @@
-# ML-Decoder: Scalable and Versatile Classification Head
+# ML-Decoder
 
 [paper](https://arxiv.org/abs/2111.12933)
 
