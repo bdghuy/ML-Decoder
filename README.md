@@ -1,2 +1,3 @@
 # ML-Decoder: Scalable and Versatile Classification Head
-![](img.PNG){:height="316px" width="471px"}
+
+<img src="https://github.com/bdghuy/ML-Decoder/edit/main/img.PNG" width=50% height=50%>
