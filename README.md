@@ -13,4 +13,4 @@ outputs = MLDecoder(num_classes=num_classes, d_model=128, dff=512, dropout_rate=
 model = Model(effnetv2.input, outputs)
 ```
 
-<img src="https://github.com/bdghuy/ML-Decoder/blob/main/img_.PNG" width="505" height="265">
+<img src="https://github.com/bdghuy/ML-Decoder/blob/main/img_.PNG" width="404" height="212">
