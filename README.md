@@ -4,7 +4,7 @@ Implementation for paper [ML-Decoder: Scalable and Versatile Classification Head
 
 The official pytorch [code](https://github.com/Alibaba-MIIL/ML_Decoder)
 
-$num\, group queries K = \lceil \frac{num classes}{group factor} \rceil$
+num group queries $K = \lceil \frac{num classes}{group factor} \rceil$
 
 #### Sample Usage:
 
