@@ -4,7 +4,7 @@ Implementation for paper [ML-Decoder: Scalable and Versatile Classification Head
 
 The official pytorch [code](https://github.com/Alibaba-MIIL/ML_Decoder)
 
-$num_group_queries K = \lceil \rceil$
+$num\_group\_queries K = \lceil \rceil$
 
 #### Sample Usage:
 
