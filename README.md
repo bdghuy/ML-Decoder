@@ -1,8 +1,10 @@
 ## ML-Decoder
 
-Implementation for paper [ML-Decoder: Scalable and Versatile Classification Head](https://arxiv.org/abs/2111.12933) with full-decoding (g = 1).
+Implementation for paper [ML-Decoder: Scalable and Versatile Classification Head](https://arxiv.org/abs/2111.12933).
 
 The official pytorch [code](https://github.com/Alibaba-MIIL/ML_Decoder)
+
+$num_group_queries K = \lceil \rceil$
 
 #### Sample Usage:
 
