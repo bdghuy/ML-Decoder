@@ -1,4 +1,6 @@
-import tensorflow as tf 
+import tensorflow as tf
+import math 
+
 
 class DecoderLayer(tf.keras.layers.Layer):
   def __init__(self,
@@ -51,38 +53,61 @@ class DecoderLayer(tf.keras.layers.Layer):
 
     return out3
 
+
 class MLDecoder(tf.keras.layers.Layer):
   def __init__(self,
                *,
                num_classes,
                d_model,
                dff,
+               group_factor=-1,
                num_attention_heads=8,
                emb_seed=0,
                dropout_rate=0.1
                ):
     super(MLDecoder, self).__init__()
 
+    if group_factor < 1 or group_factor > num_classes:
+      group_factor = 1
+    
+    # number of group queries
+    self.K = int(math.ceil(num_classes/group_factor))
+    
+    # embedding group queries
     emb_init = tf.keras.initializers.RandomNormal(mean=0., stddev=1., seed=emb_seed)
-    w_init = tf.keras.initializers.GlorotNormal()
+    self.query_emb = emb_init(shape=(1, self.K, d_model))
 
     # projection layer
-    self.project = tf.keras.Sequential([tf.keras.layers.Dense(d_model, activation='relu')])
+    self.project = tf.keras.layers.Dense(d_model, activation='relu')
+
     # decoder layer
-    self.query_emb = emb_init(shape=(1, num_classes, d_model))
     self.decoder = DecoderLayer(d_model=d_model, num_attention_heads=num_attention_heads, dff=dff, dropout_rate=dropout_rate)
-    # cls layer
-    self.w = tf.Variable(w_init(shape=(1, d_model, 1)), trainable=True)
-    self.softmax = tf.keras.layers.Softmax()
+
+    # group fully-connected layer
+    self.group_fc = []
+    for _ in range(self.K-1):
+      self.group_fc.append(tf.keras.layers.Dense(group_factor))
+
+    self.group_fc.append(tf.keras.layers.Dense(num_classes%group_factor or group_factor))
 
   def call(self, x, training):
-    x = tf.reshape(x, [-1, tf.shape(x)[1]*tf.shape(x)[2], tf.shape(x)[3]])
+
+    N, H, W, C = tf.shape(x)[0], tf.shape(x)[1], tf.shape(x)[2], tf.shape(x)[3]
+
+    # [N, H, W, C] -> [N, H*W, C]
+    x = tf.reshape(x, [N, H*W, C]) 
+
     x = self.project(x)
 
-    batch_queries = tf.tile(self.query_emb, multiples=[tf.shape(x)[0], 1, 1])
+    batch_queries = tf.tile(self.query_emb, multiples=[N, 1, 1])
     x = self.decoder(batch_queries, x, training)
 
-    x = tf.matmul(x, self.w)
-    x = tf.squeeze(x, [-1])
-    x = self.softmax(x)
-    return x
+    # [N, K, D] -> [K, N, D]
+    x = tf.transpose(x, perm=[1, 0, 2])
+    logits = [] 
+    for k in range(self.K):
+      logits.append(self.group_fc[k](x[k]))
+
+    logits = tf.concat(logits, 1)
+
+    return logits
