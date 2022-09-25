@@ -10,10 +10,12 @@ $\text{num group queries } K = \lceil \frac{\text{num classes } C}{\text{group f
 #### Sample Usage:
 
 ```
-effnetv2 = EfficientNetV2B1(input_shape=[None, None, 3], include_top=False)
-outputs = MLDecoder(num_classes=num_classes, d_model=128, dff=512, dropout_rate=0)(effnetv2.output)
+effv2 = EfficientNetV2B0(include_top=False, 
+                         input_shape=[None, None, 3])
+logits = MLDecoder(num_classes=num_classes, d_model=256, dff=1024, group_factor=10, dropout_rate=0)(effv2.output)
+outputs = tf.keras.layers.Softmax()(logits)
 
-model = Model(effnetv2.input, outputs)
+model = Model(effv2.input, outputs)
 ```
 Accuracy vs. Parameters and FLOPS for different classification heads on simple dataset.
 
